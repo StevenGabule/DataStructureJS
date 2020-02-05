@@ -41,6 +41,7 @@ function findIndexAll(arr, value) {
     arr.forEach((el, i) => (el === value) && indices.push(i))
     return indices;
 }
+
 var res = findIndexAll(people, 'John')
 console.log(res)
 
