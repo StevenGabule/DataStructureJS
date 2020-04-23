@@ -70,52 +70,55 @@ console.log(show);
 /*The Array.from() method creates a new, shallow-copied Array instance from an array-like or iterable object.*/
 // Generate a sequence of numbers Since the array is initialized with `undefined` on each position,
 // the value of `v` below will be `undefined`
-let range = Array.from({length: 100}, (v, i) => Math.round(Math.random() * i));
-console.log(range);
-console.log(Array.from('foo'))
+// let range = Array.from({length: 100}, (v, i) => Math.round(Math.random() * i));
+// console.log(range);
+// console.log(Array.from('foo'))
 
 // Using an arrow function as the map function to manipulate the elements
-console.log(Array.from([1,2,3], x => x + x ))
+// console.log(Array.from([1,2,3], x => x + x ))
 
-const sett = new Set(['foo', 'bar', 'baz', 'foo']);
-console.log(Array.from(sett))
+// const sett = new Set(['foo', 'bar', 'baz', 'foo']);
+// console.log(Array.from(sett))
 
-const mapp = new Map([[1,2],[2,4],[4,8]]);
-console.log(Array.from(mapp))
+// const mapp = new Map([[1,2],[2,4],[4,8]]);
+// console.log(Array.from(mapp))
 
-const mapp1 = new Map([['1','a'],['2','b']]);
-console.log(Array.from(mapp1.values()))
-console.log(Array.from(mapp1.keys()))
+// const mapp1 = new Map([['1','a'],['2','b']]);
+// console.log(Array.from(mapp1.values()))
+// console.log(Array.from(mapp1.keys()))
 
-function f() {
-    return Array.from(arguments);
-}
-console.log(f(1,2,3))
+// function f() {
+//     return Array.from(arguments);
+// }
+// console.log(f(1,2,3))
 
 // Sequence generator function (commonly referred to as "range", e.g. Clojure, PHP etc)
-const ranges = (start, stop, step) => Array.from({length: (stop-start) / step + 1}, (_,i) => start + (i*step));
+//const ranges = (start, stop, step) => Array.from({length: (stop-start) / step + 1}, (_,i) => start + (i*step));
 
 // Generate numbers range 2..10 with step of 5
-console.log(ranges(2,10,5)) 
+//console.log(ranges(2,10,5)) 
 
 // Generate the alphabet using Array.from making use of it being ordered as a sequence
-console.log(ranges('A'.charCodeAt(0), 'Z'.charCodeAt(0), 1).map(x => String.fromCharCode(x)))
+//console.log(ranges('A'.charCodeAt(0), 'Z'.charCodeAt(0), 1).map(x => String.fromCharCode(x)))
 
 // get only unique values in array
-let usernames = ['Jeff', 'Doug', 'John', 'John'];
+/*let usernames = ['Jeff', 'Doug', 'John', 'John'];
 let newUsernames = usernames.filter((name, index, array) => array.indexOf(name) === index ? name : '');
-//console.log(newUsernames);
+*///console.log(newUsernames);
 
 // use set to filter duplicate
-let set = [...new Set(usernames)];
+//let set = [...new Set(usernames)];
 //console.log(set);
 
 // find the difference (non-shared items) between two arrays
-let _arr1 = ['fred', 'doug', 'amy', 'amy'];
-let _arr2 = ['fred', 'doug', 'joe'];
-let _result = [...new Set(_arr1)].filter(el => !_arr2.includes(el));
-//console.log(_result);
+let arr1 = ['fred', 'doug', 'amy', 'amy'];
+let arr2 = ['fred', 'doug', 'joe'];
+/*let res = [...new Set(arr1)].filter(el => !arr2.includes(el));
+console.log(res);
+*/
 
+let res = arr1.includes(arr2);
+console.log(res)
 
 // remove items from left right side of arrays
 let nums = [23, 987, 45, 89];

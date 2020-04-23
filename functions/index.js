@@ -5,7 +5,6 @@
 //     return result;
 // }
 
-// console.log(power(2,10))
 
 // let landscape = () => {
 //     let result = "";

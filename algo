@@ -1,0 +1,7 @@
+Time Complexity 
+=> What makes an algorithm fast?
+=> Space Complexity - How much memory is used?
+=> Time Complexity - How many primitive operations are executed?
+	-> with respect to input size
+	-> and assuming worst case scenarios
+=> 
