@@ -31,7 +31,7 @@ function Logarithmetic(n) {
     }
 }
 
-Logarithmetic(1000000);
+linear(1000000);
 
 
 

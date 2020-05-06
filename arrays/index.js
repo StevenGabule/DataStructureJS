@@ -111,51 +111,57 @@ let newUsernames = usernames.filter((name, index, array) => array.indexOf(name) 
 //console.log(set);
 
 // find the difference (non-shared items) between two arrays
-let arr1 = ['fred', 'doug', 'amy', 'amy'];
-let arr2 = ['fred', 'doug', 'joe'];
+/*let arr1 = ['fred', 'doug', 'amy', 'amy'];
+let arr2 = ['fred', 'doug', 'amy'];*/
 /*let res = [...new Set(arr1)].filter(el => !arr2.includes(el));
 console.log(res);
 */
+/*console.log(arr1.includes(arr2))
 
-let res = arr1.includes(arr2);
-console.log(res)
+const array1 = [1,2,3];
+console.log(array1.includes(3))
+
+const pets = ['cat', 'dog', 'bat'];
+console.log(pets.includes('cat'));
+console.log(pets.includes('Cat'))*/
 
 // remove items from left right side of arrays
-let nums = [23, 987, 45, 89];
+/*let nums = [23, 987, 45, 89];
 let removeFromLeft = nums.slice(0, 3);
-//console.log(removeFromLeft);
+console.log(removeFromLeft);
 
 let removeFromRight = nums.slice(1);
-//console.log(removeFromRight);
-//console.log(nums);
+console.log(removeFromRight);
+console.log(nums);
 
 let getNthItem = (arr, num) => arr.slice(num - 1, num)[0];
-//console.log(getNthItem(nums, 3));
-
+console.log(getNthItem(nums, 3));
 function offsetArray(arr, offset) {
     return [...arr.slice(offset), ...arr.slice(0, offset)]
 }
-
-//console.log(offsetArray([1, 2, 3, 4], 2));
+console.log(offsetArray([1, 2, 3, 4], 2));
+*/
 
 // find shared values between two arrays
-let men = ['Jim', 'Doug', 'Fred', 'Dave'];
+/*let men = ['Jim', 'Doug', 'Fred', 'Dave'];
 let over50 = ['Angie', 'Dave', 'Jessica', 'Jim'];
-//console.log(over50.filter(person => men.includes(person)));
+console.log(over50.filter(person => men.includes(person)));
+*/
 
 // get last item in array, get everything before last item in array
-let Name = ['Bill', 'Fried', 'doug', 'Jessica', 'Abe', 'John', 'Doe'];
-//console.log(Name[Name.length - 1]);
-//console.log(Name.slice(0, -1));
+/*let Name = ['Bill', 'Fried', 'doug', 'Jessica', 'Abe', 'John', 'Doe'];
+console.log(Name[Name.length - 1]);
+console.log(Name.slice(0, -1));
+*/
 
 // return last item of array
-// let arr1 = [5, 6, 7, 8];
-// arr1.pop();
-// //console.log(arr1);
+/*let arr1 = [5, 6, 7, 8];
+arr1.pop();
+console.log(arr1);
 
 const findLast = (arr, fn) =>  arr.filter(fn).pop();
-
-//console.log(findLast(arr1, el => el > 5));
+console.log(findLast(arr1, el => el > 5));
 
 let findLast_ = (arr, fn) => arr.filter(fn).pop();
-//console.log(findLast_(arr1, el => el > 4));
+console.log(findLast_(arr1, el => el > 4));
+*/
