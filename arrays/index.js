@@ -96,7 +96,7 @@ console.log(show);
 //const ranges = (start, stop, step) => Array.from({length: (stop-start) / step + 1}, (_,i) => start + (i*step));
 
 // Generate numbers range 2..10 with step of 5
-//console.log(ranges(2,10,5)) 
+//console.log(ranges(2,10,5))
 
 // Generate the alphabet using Array.from making use of it being ordered as a sequence
 //console.log(ranges('A'.charCodeAt(0), 'Z'.charCodeAt(0), 1).map(x => String.fromCharCode(x)))
@@ -111,11 +111,10 @@ let newUsernames = usernames.filter((name, index, array) => array.indexOf(name) 
 //console.log(set);
 
 // find the difference (non-shared items) between two arrays
-/*let arr1 = ['fred', 'doug', 'amy', 'amy'];
-let arr2 = ['fred', 'doug', 'amy'];*/
-/*let res = [...new Set(arr1)].filter(el => !arr2.includes(el));
+let arr1 = ['fred', 'doug', 'amy', 'amy', 'adasd'];
+let arr2 = ['fred', 'doug', 'amy'];
+let res = [...new Set(arr1)].filter(el => !arr2.includes(el));
 console.log(res);
-*/
 /*console.log(arr1.includes(arr2))
 
 const array1 = [1,2,3];

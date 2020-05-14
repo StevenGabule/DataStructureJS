@@ -43,7 +43,6 @@ function twoNumberSum(arr, targetSum) {
     let nums = {};
     for (let i = 0; i < arr.length; i++) {
         let potential = targetSum - arr[i];
-        console.log(`${targetSum+ " - "+arr[i]}`);
         if (potential in nums) {
             return [potential, arr[i]]
         }
