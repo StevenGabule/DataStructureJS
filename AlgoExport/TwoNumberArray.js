@@ -47,7 +47,6 @@ function twoNumberSum(arr, targetSum) {
             return [potential, arr[i]]
         }
         nums[arr[i]] = true;
-        console.log(nums[arr[i]]);
     }
     return []
 }

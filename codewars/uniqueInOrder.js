@@ -12,17 +12,13 @@ function uniqueInOrder(iterable) {
     let _array = [];
     let temp;
     let _split = Array.isArray(iterable) ? iterable : iterable.split('');
-    for (let i = 0; i < _split.length; i++) {
+    for (let i = 0; i < _split.length; i++) 
         temp = _split[i];
-        if (temp !== _split[i+1]) {
-            _array.push(temp);
-        }
-    }
+        if (temp !== _split[i+1]) _array.push(temp);
     return _array;
 }
 
 function uniqueInOrderSolution1(iterable) {
-    // return [...iterable].filter((v,i) => v !== iterable[i-1])
     return [...iterable].filter((v, i) => v !== iterable[i-1])
 }
 

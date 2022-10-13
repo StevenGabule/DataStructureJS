@@ -6,9 +6,7 @@
 function getCount(str) {
     let vowelsCount = 0;
     for (let i = 0; i < str.length; i++) {
-        if ((/^[aeiou]/i).test(str[i])) {
-            vowelsCount++;
-        }
+        if ((/^[aeiou]/i).test(str[i])) vowelsCount++;
     }
     return vowelsCount;
 }

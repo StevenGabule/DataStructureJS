@@ -39,56 +39,44 @@
 // console.log(twice(5))
 
 function power(base, exponent) {
-    if (exponent == 0) {
-        return 1;
-    } else {
-        return base * power(base, exponent - 1);
-    }
+    if (exponent == 0) return 1; 
+    else return base * power(base, exponent - 1);
 }
-
-//console.log(power(2,4))
 
 function findSolution(target) {
     function find(start, history) {
         if (start == target) return history;
         else if (start > target) return null;
-        else
-            return (
-                find(start + 5, "(" + history + " + 5 )") ||
-                find(start * 3, "(" + history + " * 3)")
-            );
+        else return (find(start + 5, "(" + history + " + 5 )") || find(start * 3, "(" + history + " * 3)"));
     }
-
     return find(1, "1");
 }
+console.log(findSolution(24))
 
-// console.log(findSolution(24))
 // function forEach(srray, action) {
 //     for (let i = 0; i < array.length; i++) {
 //         const element = array[i];
 //     }
 // }
 
-// function forEach(array, action) {
-//     let names = array.length;
-//     for(var i  =0 ; i < names; i++)
-//         action(array[i])
-// }
+function forEach(array, action) {
+    let names = array.length;
+    for(var i  =0 ; i < names; i++)
+        action(array[i])
+}
 
-// forEach(['John doe', 'Jane doe', 'John wick'], console.log);
+forEach(['John doe', 'Jane doe', 'John wick'], console.log);
 
-// var numbers = [1,2,3,4,5,6], sum = 0;
-// forEach(numbers, (number) =>  sum+=number)
-// console.log(sum);
+var numbers = [1,2,3,4,5,6], 
+    sum = 0;
+forEach(numbers, (number) => sum +=number)
+console.log(sum);
 
 // The Lycanthrope’s Log
 var journal = [];
 
 function addEntry(events, didTurnIntoASquirrel) {
-    journal.push({
-        events: events,
-        squirrel: didTurnIntoASquirrel
-    });
+    journal.push({events: events, squirrel: didTurnIntoASquirrel});
 }
 
 addEntry(["work", "touched tree", "pizza", "running", "television"], false);

@@ -149,7 +149,7 @@ function sharedDNA(person, fromMother, fromFather) {
 var ph = byName["Philibert Haverbeke"]
 console.log(reduceAncestors(ph, sharedDNA, 0) / 4)
 
-//  ﬁnds the percentage of known ancestors, 
+//  ﬁn ds the percentage of known ancestors, 
 // for a given person, who lived past 70
 function countAncestors(person, test) {
     function combine(person, fromMother, fromFather) {
