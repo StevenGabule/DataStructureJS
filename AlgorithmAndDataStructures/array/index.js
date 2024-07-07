@@ -1,7 +1,7 @@
 // Searching for a value
 let names = ['john', 'doe', 'janes', 'blue'];
-let name = 'blue';
-let positionIn = names.indexOf(name);
+let nameFind = 'blue';
+let positionIn = names.indexOf(nameFind);
 console.log(positionIn);
 console.log(positionIn !== -1);
 
