@@ -23,5 +23,9 @@ function Person(name) {
 
 Object.assign(Person.prototype, personPrototype1);
 const ben = new Person('Ben')
-ben.greet();
+ben.greet(); // hello, my name is Ben!
 
+const irma = new Person("Irma");
+
+console.log(Object.hasOwn(irma, "name")); // true
+console.log(Object.hasOwn(irma, "greet")); // false
