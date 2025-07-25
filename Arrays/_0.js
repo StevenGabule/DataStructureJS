@@ -127,3 +127,25 @@ console.log(flattened);
 
 // console.log({a2: a2.flat(2)});
 // console.log({a2: a2.flat(Infinity)});
+
+/**
+ * @param {any[]} arr The potentially nested array
+ * @returns {any[]} A new, completely flatten array.
+ */
+function flatArrayRecursive(arr) {
+	let flattened = [];
+
+	for (const element of arr) {
+		if(Array.isArray(element)) {
+			flattened.push(...flatArrayRecursive(element))
+		} else {
+			flattened.push(element)
+		}
+	}
+
+	return flattened;
+}
+
+const a3 = [0, 1, [2, [3, [4, 5]]]];
+const flattened3 = flatArrayRecursive(a3);
+console.log(flattened3);
