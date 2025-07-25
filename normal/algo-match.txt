@@ -1,0 +1,58 @@
+Tech stack: 
+Frontend: NextJS v15, Typescript, React Query, React Hook Form, AxiosJS, Zustand, ShadCN, Tailwindcss
+Backend: NestJS, Typescript, Prisma, PostgreSQL, SOLID Approach and best practices
+
+How to achieve this feature and what do you need from me to get the result.
+
+TidyDen Cleaner Matching Algorithm
+Note: Business Hours = 7am – 7pm in Customer time zone.
+
+Step 1: Customer Completes Quote
+- The customer selects the type of service (e.g., Junior, Standard, Expert) and required functions (e.g. Carpet cleaning) which translates to Provider Skills (e.g., carpet cleaning).
+- They provide the job location and details of their house as per the standard form already built.
+
+Step 2: Initial Provider Match
+The system filters and generates a “Matched List” of eligible Providers based on:
+1.	Cleaner Type Match: Provider must meet the selected service level (Junior, Standard, Expert).
+2.	Service Area: Provider’s service radius must include the job location.
+3.	Service Type: Provider's can choose if they only want Ad-Hoc, Bond or Recurring (or any combination).
+4.	Skillset: Provider must possess the necessary skills for the job (e.g., carpet cleaning).
+5.	Maximum Weekly Hours:
+	- The system checks the Provider’s available hours for the week.
+	- If the job duration plus existing allocated work would exceed their stated max weekly hours, the Provider is excluded.
+
+Step 3: Customer Selects Date and Time
+•	The customer sees a calendar with only the available times for Providers on the pre-matched list.
+•	Times where no Providers from the pre-matched list are available are greyed out/unavailable.
+•	This ensures customers can only select slots where there’s at least one available Provider.
+
+Step 4: Shortlist
+Once the customer selects a time slot, the system shortlists Providers from the pre-matched list using a weighted scoring formula. The factors include:
+1.	Internal Performance Score (e.g., 0–100).
+2.	Customer Star Rating (converted from 5 star [how customers see it] to a 100-point scale like the internal performance score).
+3.	Proximity to Job (closer distance = higher score).
+4.	Loyalty/Experience (e.g., total jobs completed, tenure on platform).
+5.	New Provider Boost (to give new Providers a fair chance; apply a bonus weight for those with <1 jobs).
+
+Shortlist Weighted Formula:
+Final Score = (0.3 * Internal Score) + (0.3 * Star Rating) + (0.2 * Proximity Score) + 
+(0.1 * Loyalty Score) + (0.5 * New Provider Boost)
+•	The system ranks Providers by this final score and assigns the job to the top-ranked Provider, to be referred to 
+    as “Preferred Provider”.
+•	The Provider has 4 business hours to acknowledge the job, otherwise the system continues to step 5 below.
+o	Once Provider has acknowledged the job, the system should start a chat thread between the Provider 
+and Customer and send the Customer an “Acknowledgement Message”. The Provider should be able to edit 
+their “Acknowledgement Message” in their settings, but as a standard system base, it should say 
+something like “Hi, My name is XXXX. I will be the Cleaner on your Job. If you need anything, 
+please reach out to me here.”
+
+Step 5: Send to Short Listed Provider
+If the Preferred Provider does not acknowledge the job within the given timeframe, the system will then send the job to all of the shortlisted Providers (from step 4 above) (including the First Choice Provider) that are available at the selected date/time. The Providers should receive a notification, and the Job should be visible in their “Available Jobs” list and visible on their Dashboard. The Providers have a button visible: “Accept Job”.
+If not accepted in this step, the Job should sit in this step for 4 hours, before moving to the next step below.
+
+Step 6: Send to Matched Providers
+If a Provider from the Shortlisted Providers does not accept the job within the given timeframe, the system will then send the job to all of the Matched Providers (from step 2 above) (including the Shortlisted Providers and First Choice Provider). The Providers should receive a notification, and the Job should be visible in their “Available Jobs” list and visible on their Dashboard. The Providers have 2 buttons visible: “Accept Job” or “Propose New Time”.
+If the Propose New Time button is pressed the Customer they gets a notification saying something like “Propose new time”, which shows the Providers proposed time. If multiple providers press the propose new time button (before the customer accepts the new proposed time), the system should show the Customer all of the proposed times. The Customer can choose which of the proposed times they want their booking set to (on a calendar view). In the event that the customer selects the first proposed time, the Job should be removed from the view of the other Providers immediately and be allocated to the Provider who proposed the time which the customer selected. This should commence the “Acknowledgement Message” process as detailed in Step 4 above.
+
+Step 7: Notification to TidyDen Admin Team
+If Step 6 is not resolved in 4 business hours, the TidyDen Admin Team must be notified (Email) stating that there is an unassigned job which needs attention. The TidyDen Admin Team will then manually sort out the allocation.

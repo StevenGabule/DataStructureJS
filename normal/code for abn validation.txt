@@ -1,0 +1,535 @@
+// pages/api/validate-abn.ts
+import type { NextApiRequest, NextApiResponse } from 'next';
+
+type ABRResponse = {
+  Abn?: string;
+  AbnStatus?: string;
+  EntityName?: string;
+  Message?: string; // Error messages from ABR
+};
+
+type ValidationResponse = {
+  isValid: boolean;
+  message: string;
+  abn?: string;
+  entityName?: string;
+  status?: string;
+};
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<ValidationResponse | { error: string }>
+) {
+  if (req.method !== 'GET') {
+    res.setHeader('Allow', ['GET']);
+    return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
+  }
+
+  const { abn } = req.query;
+
+  if (typeof abn !== 'string' || !/^\d{11}$/.test(abn)) {
+    return res.status(400).json({ isValid: false, message: 'Invalid ABN format submitted to API route.' });
+  }
+
+  // IMPORTANT: You need to obtain your own GUID from ABR for production use.
+  // Register here: https://abr.business.gov.au/Tools/WebServices
+  // Using a placeholder GUID will be heavily rate-limited or may not work.
+  const ABR_GUID = process.env.ABR_GUID || 'your-abr-guid-placeholder'; // Store your GUID in .env.local
+
+  if (ABR_GUID === 'your-abr-guid-placeholder') {
+    console.warn('ABR_GUID is using a placeholder. Please obtain a real GUID for ABN validation.');
+    // For demonstration, we might allow it to proceed but in production, this should be an error or handled.
+  }
+
+  const abrApiUrl = `https://abr.business.gov.au/json/AbnDetails.aspx?abn=${abn}&guid=${ABR_GUID}`;
+
+  try {
+    const abrResponse = await fetch(abrApiUrl);
+    if (!abrResponse.ok) {
+      // This could be due to ABR service issues or invalid GUID
+      console.error(`ABR service request failed with status: ${abrResponse.status}`);
+      return res.status(502).json({ // Bad Gateway
+        isValid: false,
+        message: 'Could not connect to ABR service.',
+      });
+    }
+
+    const data: ABRResponse = await abrResponse.json();
+
+    if (data.Message && data.Message.trim() !== '') {
+      // ABR service returned a message, typically means ABN not found or invalid search
+      return res.status(200).json({
+        isValid: false,
+        message: data.Message.includes("not a valid ABN") || data.Message.includes("Search text not found")
+                 ? "ABN not found or is not valid."
+                 : data.Message, // Or a more generic "ABN could not be validated."
+      });
+    }
+
+    if (data.Abn && data.AbnStatus === 'Active') {
+      return res.status(200).json({
+        isValid: true,
+        message: 'ABN is active.',
+        abn: data.Abn,
+        entityName: data.EntityName,
+        status: data.AbnStatus,
+      });
+    } else {
+      return res.status(200).json({
+        isValid: false,
+        message: `ABN is ${data.AbnStatus || 'not active or not found'}.`,
+        abn: data.Abn,
+        entityName: data.EntityName,
+        status: data.AbnStatus,
+      });
+    }
+  } catch (error) {
+    console.error('Error calling ABR service:', error);
+    return res.status(500).json({
+      isValid: false,
+      message: 'An error occurred while validating ABN with ABR service.',
+    });
+  }
+}
+
+
+'use client';
+
+import { z } from 'zod';
+import { CleanerStep3Data } from '@/lib/types/cleaner-registration';
+import React, { useState, useEffect, useRef } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as uploadFileApi from '@/lib/api/upload-files';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Icons } from '@/components/ui/icons';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+
+const step3Schema = z.object({
+  eligibilityInsuranceFileId: z.string().optional(),
+  eligibilityInsuranceAccepted: z.boolean().optional(),
+
+  eligibilityAustralianBusinessNumber: z.string()
+    .optional()
+    // First, a synchronous refine for basic format to avoid unnecessary API calls
+    .refine(
+      (abn) => {
+        if (abn === undefined || abn === null || abn.trim() === '') {
+          return true; // Valid if optional and not provided
+        }
+        const cleanAbn = abn.replace(/\s/g, '');
+        return /^\d{11}$/.test(cleanAbn) && cleanAbn[0] !== '0'; // 11 digits, not starting with 0
+      },
+      {
+        message: 'ABN must be 11 digits and not start with zero, or leave blank.',
+      }
+    )
+    // Second, an asynchronous refine to check against ABR service via our API route
+    .refine(
+      async (abn) => {
+        if (abn === undefined || abn === null || abn.trim() === '') {
+          return true; // Already handled by optional, but good for clarity
+        }
+        const cleanAbn = abn.replace(/\s/g, '');
+
+        // If basic format check already failed (though previous refine should catch it)
+        if (!/^\d{11}$/.test(cleanAbn) || cleanAbn[0] === '0') {
+          return true; // Let the previous refine handle the message for format errors
+        }
+
+        try {
+          const response = await fetch(`/api/validate-abn?abn=${encodeURIComponent(cleanAbn)}`);
+          // Note: response.ok might be true even if ABN is invalid (e.g. 400 from our API route for bad ABN format)
+          // The JSON body `data.isValid` is the source of truth from our API route.
+          if (!response.ok) { // Network error or 5xx from our API route
+             console.error("API route call failed:", response.statusText);
+             return false; // Consider it invalid if our API route fails
+          }
+          const data = await response.json();
+          return data.isValid; // Our API route returns { isValid: boolean, ... }
+        } catch (error) {
+          console.error("ABN validation API call failed:", error);
+          return false; // Network error or other issue
+        }
+      },
+      {
+        message: "ABN is not valid or active according to ABR, or could not be verified.",
+      }
+    ),
+
+  eligibilityPoliceClearanceCertificationFileId: z.string().optional(),
+  eligibilityPoliceClearanceCertificationAccepted: z.boolean(),
+})
+.refine(data => {
+  return !!data.eligibilityInsuranceFileId || data.eligibilityInsuranceAccepted;
+}, {
+  message: 'You must either upload an insurance file or accept liability terms',
+  path: ['eligibilityInsuranceAccepted'],
+})
+.refine(data => {
+  return !!data.eligibilityPoliceClearanceCertificationFileId || data.eligibilityPoliceClearanceCertificationAccepted;
+}, {
+  message: 'You must either upload a police clearance certificate or acknowledge you can obtain one',
+  path: ['eligibilityPoliceClearanceCertificationAccepted'],
+});
+
+interface StepThreeProps {
+  onSubmit: (data: CleanerStep3Data) => void;
+  onPrevious: () => void;
+  isLoading: boolean;
+  initialData: CleanerStep3Data | null;
+}
+
+export function StepThreeEligibility({ onPrevious, onSubmit, initialData, isLoading }: StepThreeProps) {
+  // ... (rest of your component state and functions remain the same)
+  const [uploadingInsurance, setUploadingInsurance] = useState(false);
+  const [uploadingPolice, setUploadingPolice] = useState(false);
+  const [insuranceFileName, setInsuranceFileName] = useState<string | null>(null);
+  const [policeFileName, setPoliceFileName] = useState<string | null>(null);
+
+  const insuranceFileRef = useRef<HTMLInputElement>(null);
+  const policeFileRef = useRef<HTMLInputElement>(null);
+
+  const form = useForm<CleanerStep3Data>({
+    resolver: zodResolver(step3Schema),
+    // Important: React Hook Form triggers async validation on blur by default for performance.
+    // You can change mode: 'onChange' or 'onSubmit' if needed, but 'onBlur' is good for API calls.
+    mode: 'onBlur', // Or 'onSubmit'
+    defaultValues: initialData || {
+      eligibilityInsuranceFileId: undefined,
+      eligibilityInsuranceAccepted: false,
+      eligibilityAustralianBusinessNumber: undefined,
+      eligibilityPoliceClearanceCertificationFileId: undefined,
+      eligibilityPoliceClearanceCertificationAccepted: false,
+    },
+  });
+
+  const { formState: { isValidating } } = form; // To potentially show a loading spinner
+
+  const watchedInsuranceFileId = form.watch('eligibilityInsuranceFileId');
+  const watchedPoliceFileId = form.watch('eligibilityPoliceClearanceCertificationFileId');
+
+  useEffect(() => {
+    if (watchedInsuranceFileId) {
+      form.setValue('eligibilityInsuranceAccepted', false, { shouldValidate: true });
+    }
+  }, [watchedInsuranceFileId, form.setValue]);
+
+  useEffect(() => {
+    if (watchedPoliceFileId) {
+      form.setValue('eligibilityPoliceClearanceCertificationAccepted', false, { shouldValidate: true });
+    }
+  }, [watchedPoliceFileId, form.setValue]);
+
+  // ... (handleFileChange, handleRemoveFile functions remain the same) ...
+  const handleInsuranceFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      if (!form.getValues('eligibilityInsuranceFileId')) {
+        setInsuranceFileName(null);
+        form.clearErrors('eligibilityInsuranceFileId');
+        if (insuranceFileRef.current) insuranceFileRef.current.value = '';
+      }
+      return;
+    }
+
+    setUploadingInsurance(true);
+    setInsuranceFileName(file.name);
+    form.setValue('eligibilityInsuranceFileId', undefined, { shouldValidate: false });
+    form.clearErrors('eligibilityInsuranceFileId');
+
+    try {
+      const result = await uploadFileApi.uploadFile(file);
+      form.setValue('eligibilityInsuranceFileId', result.uuid, { shouldValidate: true });
+    } catch (error) {
+      console.error('Insurance file upload error:', error);
+      form.setValue('eligibilityInsuranceFileId', undefined, { shouldValidate: true });
+      form.setError('eligibilityInsuranceFileId', { type: 'manual', message: 'Upload failed. Please try again or remove the file.' });
+    } finally {
+      setUploadingInsurance(false);
+    }
+  };
+
+  const handlePoliceFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+     if (!file) {
+      if (!form.getValues('eligibilityPoliceClearanceCertificationFileId')) {
+        setPoliceFileName(null);
+        form.clearErrors('eligibilityPoliceClearanceCertificationFileId');
+        if (policeFileRef.current) policeFileRef.current.value = '';
+      }
+      return;
+    }
+
+    setUploadingPolice(true);
+    setPoliceFileName(file.name);
+    form.setValue('eligibilityPoliceClearanceCertificationFileId', undefined, { shouldValidate: false });
+    form.clearErrors('eligibilityPoliceClearanceCertificationFileId');
+
+    try {
+      const result = await uploadFileApi.uploadFile(file);
+      form.setValue('eligibilityPoliceClearanceCertificationFileId', result.uuid, { shouldValidate: true });
+    } catch (error) {
+      console.error('Police clearance file upload error:', error);
+      form.setValue('eligibilityPoliceClearanceCertificationFileId', undefined, { shouldValidate: true });
+      form.setError('eligibilityPoliceClearanceCertificationFileId', { type: 'manual', message: 'Upload failed. Please try again or remove the file.' });
+    } finally {
+      setUploadingPolice(false);
+    }
+  };
+
+  const handleRemoveInsuranceFile = () => {
+    form.setValue('eligibilityInsuranceFileId', undefined, { shouldValidate: true });
+    setInsuranceFileName(null);
+    form.clearErrors('eligibilityInsuranceFileId');
+    if (insuranceFileRef.current) {
+      insuranceFileRef.current.value = '';
+    }
+  };
+
+  const handleRemovePoliceFile = () => {
+    form.setValue('eligibilityPoliceClearanceCertificationFileId', undefined, { shouldValidate: true });
+    setPoliceFileName(null);
+    form.clearErrors('eligibilityPoliceClearanceCertificationFileId');
+    if (policeFileRef.current) {
+      policeFileRef.current.value = '';
+    }
+  };
+  
+  useEffect(() => {
+    if (initialData?.eligibilityInsuranceFileId && !insuranceFileName) {
+    }
+    if (initialData?.eligibilityPoliceClearanceCertificationFileId && !policeFileName) {
+    }
+  }, [initialData, insuranceFileName, policeFileName]);
+
+  return (
+    <div>
+      <h2 className="text-xl font-semibold mb-4">Eligibility & Documentation</h2>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+
+          {/* Insurance Section ... (remains the same JSX) ... */}
+          <div className="space-y-4 border p-4 rounded-md">
+            <h3 className="font-medium text-lg">Insurance</h3>
+            <div className="space-y-2">
+              <FormLabel htmlFor="insurance-file">
+                Upload Insurance Document (e.g., Certificate of Currency)
+              </FormLabel>
+              <div className="flex items-center gap-2">
+                <FormControl>
+                  <Input
+                    ref={insuranceFileRef} 
+                    id="insurance-file"
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={handleInsuranceFileChange}
+                    disabled={uploadingInsurance || isLoading}
+                    className="max-w-md file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
+                  />
+                </FormControl>
+                {uploadingInsurance && (
+                  <Icons.spinner className="h-5 w-5 animate-spin text-primary" />
+                )}
+              </div>
+
+              {(insuranceFileName || watchedInsuranceFileId) && !uploadingInsurance && (
+                <div className="flex items-center justify-between mt-1">
+                  <p className={`text-sm ${watchedInsuranceFileId && !form.formState.errors.eligibilityInsuranceFileId ? 'text-green-600' : 'text-muted-foreground'}`}>
+                    {watchedInsuranceFileId && !form.formState.errors.eligibilityInsuranceFileId ? 'Uploaded:' : 'Selected:'} {insuranceFileName || 'Uploaded file'}
+                  </p>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleRemoveInsuranceFile}
+                    disabled={isLoading}
+                    className="text-red-500 hover:text-red-700 flex items-center"
+                  >
+                    <Icons.trash className="h-4 w-4 mr-1" /> 
+                    Remove
+                  </Button>
+                </div>
+              )}
+              {form.formState.errors.eligibilityInsuranceFileId && (
+                <p className="text-sm font-medium text-destructive mt-1">
+                  {form.formState.errors.eligibilityInsuranceFileId.message}
+                </p>
+              )}
+              <FormDescription>
+                Upload your public liability insurance document if you have one.
+              </FormDescription>
+            </div>
+
+            <div className="border-t pt-4 mt-4">
+              <FormField
+                control={form.control}
+                name="eligibilityInsuranceAccepted"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 pt-2">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        disabled={isLoading || !!watchedInsuranceFileId}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel className={!!watchedInsuranceFileId ? 'text-muted-foreground' : ''}>
+                        I acknowledge that I do not have insurance and accept full liability for any damages.
+                      </FormLabel>
+                      <FormDescription>
+                        If you do not upload an insurance document, you must check this box.
+                      </FormDescription>
+                    </div>
+                  </FormItem>
+                )}
+              />
+              <FormMessage className="mt-2">
+                {form.formState.errors.eligibilityInsuranceAccepted?.message}
+              </FormMessage>
+            </div>
+          </div>
+
+          {/* ABN Section */}
+          <div className="space-y-4 my-6 border p-4 rounded-md">
+            <FormField
+              control={form.control}
+              name="eligibilityAustralianBusinessNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-lg">Australian Business Number (ABN)</FormLabel>
+                  <div className="flex items-center gap-2"> {/* Wrapper for input and potential spinner */}
+                    <FormControl>
+                      <Input
+                        placeholder="Enter your ABN (optional)"
+                        {...field}
+                        value={field.value || ''}
+                        disabled={isLoading || isValidating} // Disable while validating ABN
+                      />
+                    </FormControl>
+                    {isValidating && form.getFieldState('eligibilityAustralianBusinessNumber').isDirty && ( // Show spinner if ABN field is dirty and validating
+                      <Icons.spinner className="h-5 w-5 animate-spin text-primary" />
+                    )}
+                  </div>
+                  <FormDescription>
+                    If you have an ABN, please enter it here. This is optional. Validation occurs on blur.
+                  </FormDescription>
+                  <FormMessage /> {/* Displays validation errors for ABN */}
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* Police Clearance Section ... (remains the same JSX) ... */}
+          <div className="space-y-4 mb-10 border p-4 rounded-md">
+            <h3 className="font-medium text-lg">Police Clearance Certificate</h3>
+            <div className="space-y-2">
+              <FormLabel htmlFor="police-file">
+                Upload Police Clearance Certificate
+              </FormLabel>
+              <div className="flex items-center gap-2">
+                <FormControl>
+                  <Input
+                    ref={policeFileRef} 
+                    id="police-file"
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={handlePoliceFileChange}
+                    disabled={uploadingPolice || isLoading}
+                    className="max-w-md file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
+                  />
+                </FormControl>
+                {uploadingPolice && (
+                  <Icons.spinner className="h-5 w-5 animate-spin text-primary" />
+                )}
+              </div>
+
+              {(policeFileName || watchedPoliceFileId) && !uploadingPolice && (
+                 <div className="flex items-center justify-between mt-1">
+                  <p className={`text-sm ${watchedPoliceFileId && !form.formState.errors.eligibilityPoliceClearanceCertificationFileId ? 'text-green-600' : 'text-muted-foreground'}`}>
+                    {watchedPoliceFileId && !form.formState.errors.eligibilityPoliceClearanceCertificationFileId ? 'Uploaded:' : 'Selected:'} {policeFileName || 'Uploaded file'}
+                  </p>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleRemovePoliceFile}
+                    disabled={isLoading}
+                    className="text-red-500 hover:text-red-700 flex items-center"
+                  >
+                    <Icons.trash className="h-4 w-4 mr-1" /> 
+                    Remove
+                  </Button>
+                </div>
+              )}
+              {form.formState.errors.eligibilityPoliceClearanceCertificationFileId && (
+                <p className="text-sm font-medium text-destructive mt-1">
+                  {form.formState.errors.eligibilityPoliceClearanceCertificationFileId.message}
+                </p>
+              )}
+              <FormDescription>
+                Upload your police clearance certificate if you have one (issued within the last 12 months).
+              </FormDescription>
+            </div>
+
+            <div className="border-t pt-4 mt-4">
+              <FormField
+                control={form.control}
+                name="eligibilityPoliceClearanceCertificationAccepted"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 pt-2">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        disabled={isLoading || !!watchedPoliceFileId}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel className={!!watchedPoliceFileId ? 'text-muted-foreground' : ''}>
+                        I acknowledge that I don&#39;t currently have a police clearance certificate but can obtain one if required.
+                      </FormLabel>
+                      <FormDescription>
+                        If you do not upload a certificate, you must check this box.
+                      </FormDescription>
+                    </div>
+                  </FormItem>
+                )}
+              />
+              <FormMessage className="mt-2">
+                {form.formState.errors.eligibilityPoliceClearanceCertificationAccepted?.message}
+              </FormMessage>
+            </div>
+          </div>
+
+          <div className="flex justify-between pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onPrevious}
+              disabled={isLoading || uploadingInsurance || uploadingPolice || isValidating}
+            >
+              Previous
+            </Button>
+            <Button
+              type="submit"
+              disabled={isLoading || uploadingInsurance || uploadingPolice || isValidating}
+            >
+              {isLoading || uploadingInsurance || uploadingPolice || isValidating ? (
+                <>
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                "Next: Terms & Conditions"
+              )}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
+  );
+}

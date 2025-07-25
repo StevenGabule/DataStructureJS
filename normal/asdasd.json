@@ -1,0 +1,114 @@
+[
+  {
+    "id": 1,
+    "uuid": "2f9a5c49-e9f3-4ea1-b575-579e34bd34ac",
+    "title": "Junior Cleaner",
+    "description": "Basic cleaning services",
+    "pricePerHour": "42",
+    "currency": "AUD",
+    "isPopular": false,
+    "isHighestRated": false,
+    "cleanersubscriptionlevelnameids": "1",
+    "status": "ACTIVE",
+    "createdAt": "2025-05-08T06:37:51.713Z",
+    "updatedAt": "2025-05-08T06:37:52.638Z",
+    "benefits": [
+      {
+        "id": 1,
+        "cleanerSubscriptionLevelId": "2f9a5c49-e9f3-4ea1-b575-579e34bd34ac",
+        "cleanerSubscriptionLevelNameId": 1,
+        "createdAt": "2025-05-23T17:34:46.639Z",
+        "benefitName": {
+          "id": 1,
+          "name": "Supplies cleaning products",
+          "createdAt": "2025-05-23T17:34:22.523Z",
+          "updatedAt": "2025-05-23T17:34:24.560Z"
+        }
+      },
+      {
+        "id": 2,
+        "cleanerSubscriptionLevelId": "2f9a5c49-e9f3-4ea1-b575-579e34bd34ac",
+        "cleanerSubscriptionLevelNameId": 2,
+        "createdAt": "2025-05-23T17:34:46.639Z",
+        "benefitName": {
+          "id": 2,
+          "name": "Supplies equipment inc mop and vacuum",
+          "createdAt": "2025-05-23T17:34:32.832Z",
+          "updatedAt": "2025-05-23T17:34:34.548Z"
+        }
+      }
+    ],
+    "cleanerSubscriptionLevelNames": [
+      {
+        "id": 1,
+        "name": "Supplies cleaning products",
+        "createdAt": "2025-05-23T17:34:22.523Z",
+        "updatedAt": "2025-05-23T17:34:24.560Z"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "uuid": "29bdc685-0ae7-4334-a6f5-431acf8800bb",
+    "title": "Standard Cleaner",
+    "description": "Experienced cleaners for regular maintenance and thorough cleaning.",
+    "pricePerHour": "46",
+    "currency": "AUD",
+    "isPopular": true,
+    "isHighestRated": false,
+    "cleanersubscriptionlevelnameids": "1,2",
+    "status": "ACTIVE",
+    "createdAt": "2025-05-08T06:38:15.483Z",
+    "updatedAt": "2025-05-08T06:38:17.272Z",
+    "benefits": [],
+    "cleanerSubscriptionLevelNames": [
+      {
+        "id": 1,
+        "name": "Supplies cleaning products",
+        "createdAt": "2025-05-23T17:34:22.523Z",
+        "updatedAt": "2025-05-23T17:34:24.560Z"
+      },
+      {
+        "id": 2,
+        "name": "Supplies equipment inc mop and vacuum",
+        "createdAt": "2025-05-23T17:34:32.832Z",
+        "updatedAt": "2025-05-23T17:34:34.548Z"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "uuid": "01ccd31b-db77-44ad-b379-725958e4ca37",
+    "title": "Expert Cleaner",
+    "description": "Highly skilled cleaners for specialized tasks and premium services.",
+    "pricePerHour": "50",
+    "currency": "AUD",
+    "isPopular": false,
+    "isHighestRated": true,
+    "cleanersubscriptionlevelnameids": "1,2,3",
+    "status": "ACTIVE",
+    "createdAt": "2025-05-08T06:38:15.483Z",
+    "updatedAt": "2025-05-08T06:38:17.272Z",
+    "benefits": [],
+    "cleanerSubscriptionLevelNames": [
+      {
+        "id": 1,
+        "name": "Supplies cleaning products",
+        "createdAt": "2025-05-23T17:34:22.523Z",
+        "updatedAt": "2025-05-23T17:34:24.560Z"
+      },
+      {
+        "id": 2,
+        "name": "Supplies equipment inc mop and vacuum",
+        "createdAt": "2025-05-23T17:34:32.832Z",
+        "updatedAt": "2025-05-23T17:34:34.548Z"
+      },
+      {
+        "id": 3,
+        "name": "Proven track record on TidyDen with 4.5+ star rating",
+        "createdAt": "2025-05-23T17:34:32.832Z",
+        "updatedAt": "2025-05-23T17:34:34.548Z"
+      }
+    ]
+  }
+]
