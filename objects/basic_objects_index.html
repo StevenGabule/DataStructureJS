@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Object-oriented JavaScript example</title>
+  </head>
+
+  <body>
+    <p>
+      This example requires you to enter commands in your browser's JavaScript console (see
+      <a href="https://developer.mozilla.org/en-US/docs/Learn/Common_questions/What_are_browser_developer_tools">What are browser developer tools</a>
+      for more information).
+    </p>
+
+    <script>
+      const person = {
+        name: ['Bob', 'Smith'],
+        age: 32,
+        bio() {
+          console.log(`${this.name[0]} ${this.name[1]} is ${this.age} years old.`);
+        },
+        introduceSelf() {
+          console.log(`Hi! I'm ${this.name[0]}.`);
+        },
+      };
+
+      function logProperty(propertyName) {
+        console.log(person[propertyName]);
+      }
+
+      logProperty('name'); // ["Bob", "Smith"]
+      logProperty('age'); // 32
+
+      person['eyes'] = 'hazel';
+      person.farewell = function () {
+        console.log('Bye everybody!');
+      };
+
+      function createPerson(name) {
+        const obj = {};
+        obj.name = name;
+        obj.introduceSelf = function () {
+          console.log(`Hi! I'm ${this.name}.`);
+        };
+        return obj;
+      }
+
+			function Person(name) {
+				this.name = name;
+				this.introduceSelf = function() {
+					console.log(`Hi,I'm ${this.name}.`)
+				}
+			}
+
+      const salva = new Person('Salva');
+      salva.introduceSelf(); // "Hi! I'm Salva."
+      
+      const frankie = new Person('Frankie');
+      frankie.introduceSelf(); // "Hi! I'm Frankie."
+      
+			// Object Basics 1
+			const cat = {
+				name : 'Bertie',
+				breed : 'Cymric',
+				color : 'white',
+				greeting: function() {
+					console.log('Meow!');
+				}
+			}
+
+			const catName = cat['name'];
+			cat.greeting();
+			cat.color = 'black';
+
+			// Object Basics 2
+			const favoriteBands = {
+				name: 'BINI',
+				nationality: 'Filipino',
+				genre: 'P-Pop',
+				members: 8,
+				formed: 2020,
+				split: false,
+				albums: [
+					{name: 'ABC', released: 2012},
+					{name: 'DEF', released: 2012},
+					{name: 'AAA', released: 2013},
+				]
+			}
+
+			// Object Basics 3
+			const cat2 = {
+				name : 'Bertie',
+				breed : 'Cymric',
+				color : 'white',
+				greeting: function() {
+					console.log(`Cat name: ${this.name} and the breed is: ${this.breed} and has a color of ${this.color}`)
+				}
+			}
+
+			cat2.greeting()
+
+			function Cat(name, breed, color) {
+				this.name = name;
+				this.breed = breed;
+				this.color = color;
+
+				this.greeting = function() {
+					console.log(`Cat name: ${this.name} and the breed is: ${this.breed} and has a color of ${this.color}`)
+				}
+			}
+
+			// Object basics 4
+			const naniCat = new Cat('Nani', 'Blurs', 'red');
+			naniCat.greeting();
+
+			const stormCat = new Cat('Storm', 'ABC', 'white');
+			stormCat.greeting();
+
+    </script>
+  </body>
+</html>

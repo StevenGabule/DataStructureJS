@@ -249,6 +249,7 @@ function dataTable(data) {
     var headers = keys.map(function(name) { 
         return new UnderlinedCell(new TextCell(name)); 
     }); 
+
     var body = data.map(function(row) { 
         return keys.map(function(name) { 
             var value = row[name]; 
@@ -301,7 +302,7 @@ console.log(drawTable(dataTable(MOUNTAINS)));
 
 
 // The instanceof Operator 
-console.log(new RTextCell("A") instanceof RTextCell); 
-console.log(new RTextCell("A") instanceof TextCell); 
-console.log(new TextCell("A") instanceof RTextCell); 
-console.log([1] instanceof Array); 
+// console.log(new RTextCell("A") instanceof RTextCell); 
+// console.log(new RTextCell("A") instanceof TextCell); 
+// console.log(new TextCell("A") instanceof RTextCell); 
+// console.log([1] instanceof Array); 

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      // object literal
+      const myObject = {
+        city: 'Madrid',
+        greet() {
+          console.log(`Greetings from ${this.city}`);
+        },
+      };
+
+      myObject.greet(); // Greetings from Madrid
+
+      const myDate = new Date();
+      let object = myDate;
+
+      do {
+        object = Object.getPrototypeOf(object);
+        console.log(object);
+      } while (object);
+      // *** OUTPUT:
+      // Date.prototype
+      // Object { }
+      // null
+
+      // Shadowing properties
+      const myDate1 = new Date(1995, 11, 17);
+      console.log(myDate1.getTime()); // 819129600000
+
+      myDate1.getTime = function () {
+        console.log('something else!');
+      };
+
+      myDate1.getTime(); // 'something else!'
+
+      // Setting a prototype using Object.create
+      // Object.create() 
+      //  method creates a new object and allows you to specify an 
+      //  object that will be used as the new object's prototype.
+      const personPrototype = {
+        greet() {
+          console.log('hello!');
+        },
+      };
+
+      const carl = Object.create(personPrototype);
+      carl.greet(); // hello!
+
+      console.log(Object.getPrototypeOf(carl))
+    </script>
+  </body>
+</html>
