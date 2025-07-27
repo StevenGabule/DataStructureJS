@@ -19,7 +19,7 @@
 function List() {
     this.listSize = 0;
     this.pos = 0;
-    this.dataStore = []; // initializes an empty array to store list elements
+    this.dataStore = [];
     this.clear = clear;
     this.find = find;
     this.toString = toString;
@@ -124,7 +124,6 @@ function getElement() {
     return this.dataStore[this.pos];
 }
 
-
 let names = new List();
 names.append("Clayton");
 names.append("Raymond");
@@ -132,8 +131,10 @@ names.append("Cynthia");
 names.append("Jennifer");
 names.append("Bryan");
 names.append("Danny");
+
 names.front();
 console.log(names.getElement());
+
 names.next();
 console.log(names.getElement());
 
@@ -142,14 +143,7 @@ names.next();
 names.prev();
 console.log(names.getElement());
 
-for(names.front(); names.currPos() < names.length(); names.next()) {
+for (names.front(); names.currPos() < names.length(); names.next()) {
     console.log(names.getElement());
 }
 console.log(read)
-
-
-
-
-
-
-
