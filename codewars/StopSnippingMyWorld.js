@@ -9,29 +9,30 @@ Examples:
 * spinWords( "Hey fellow warriors" ) => returns "Hey wollef sroirraw"
 * spinWords( "This is a test") => returns "This is a test"
 * spinWords( "This is another test" )=> returns "This is rehtona test"
-* */
+*/
 
 function spinWords(str) {
     let words = str.split(' ');
-    let array_words = [];
+    let arrayWords = [];
     for (let i = 0; i < words.length; i++) {
         if (words[i].length >= 5) {
             let rev = words[i].split('').reverse();
-            array_words.push(rev.join(''))
+            arrayWords.push(rev.join(''))
         } else {
-            array_words.push(words[i])
+            arrayWords.push(words[i])
         }
     }
-    return array_words.join(' ')
+
+    return arrayWords.join(' ')
 }
 
 //  return [...iterable].filter((v, i) => v !== iterable[i-1])
 function spinWords1(str) {
-    return [...str.split(' ')].map((v, i) => v.length >= 5 ?  v.split("").reverse().join('') : v).join(' ');
+    return [...str.split(' ')].map((v, i) => v.length >= 5 ? v.split("").reverse().join('') : v).join(' ');
 }
 
-function spinWords2(string){
-    return string.replace(/\w{5,}/g, w =>  w.split('').reverse().join(''))
+function spinWords2(string) {
+    return string.replace(/\w{5,}/g, w => w.split('').reverse().join(''))
 }
 
 console.log(spinWords1("Welcome world"));
