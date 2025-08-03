@@ -116,6 +116,7 @@ function randomRobot(state) {
 }
 
 function findRoute(graph, from, to, closedRoads = []) {
+	if (from === to) return []; // Already at destination
 	let work = [{ at: from, route: [] }];
 	for (let i = 0; i < work.length; i++) {
 		let { at, route } = work[i];
@@ -126,6 +127,7 @@ function findRoute(graph, from, to, closedRoads = []) {
 			if (!work.some(w => w.at == place)) work.push({ at: place, route: route.concat(place) })
 		}
 	}
+	return null; // No route exists
 }
 
 /**
@@ -308,19 +310,16 @@ function goalOrientedRobot({ place, parcels, roadClosures }, route) {
  * Runs a robot for a single task and returns the number of turns it took.
  */
 function runTask(state, robot, memory) {
-	for (let turn = 0; ; turn++) {
-		if (state.parcels.length === 0) {
-			return turn; // Task complete
-		}
-
-		if (state.fuel <= 0) {
-			return 500; // Penalize for running out of fuel
-		}
+	const maxTurns = 1000;
+	for (let turn = 0; turn < maxTurns; turn++) {
+		if (state.parcels.length === 0) return turn;
+		if (state.fuel <= 0) return 500; // Penalize for running out of fuel
 
 		let action = robot(state, memory);
 		state = state.move(action.direction);
 		memory = action.memory;
 	}
+	return 1000; // Exceeded max turns
 }
 
 /**
