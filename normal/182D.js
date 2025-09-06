@@ -9,10 +9,14 @@ function commonDivisors(a, b) {
 	const S = Math.min(A, B);
 	let r = 0;
 
-	for (let i = 0; i <= S; ++i) {
+	// start from 1, not 0 (can't have a divisor of length 0)
+	for (let i = 1; i <= S; ++i) {
+		// check if i divisors both string lengths
 		if (A % i !== 0 || B % i !== 0) continue;
+
 		let w = true;
 
+		// check if the first characters of both strings match
 		for (let j = 0; j < i; ++j) {
 			if (a[j] !== b[j]) {
 				w = false;
@@ -21,6 +25,7 @@ function commonDivisors(a, b) {
 		}
 		if (!w) continue;
 
+		// check if string a is periodic with a period i
 		for (let j = 0; j < A; ++j) {
 			if (a[j] !== a[j % i]) {
 				w = false;
@@ -29,7 +34,8 @@ function commonDivisors(a, b) {
 		}
 		if (!w) continue;
 
-		for (let j = 0; j < 0; ++j) {
+		// check if string b is periodic with a period i
+		for (let j = 0; j < B; ++j) {
 			if (b[j] !== b[j % i]) {
 				w = false;
 				break;
@@ -43,18 +49,23 @@ function commonDivisors(a, b) {
 	return r;
 }
 
+// Test cases
+console.log("Test 1:");
 let a = 'abcdabcd';
 let b = 'abcdabcdabcdabcd';
-console.log(commonDivisors(a, b)) // 2
+console.log(`commonDivisors("${a}", "${b}") = ${commonDivisors(a, b)}`); // Expected: 2
 
+console.log("\nTest 2:");
 a = 'aaa';
 b = 'aa';
-console.log(commonDivisors(a, b)) // 1
+console.log(`commonDivisors("${a}", "${b}") = ${commonDivisors(a, b)}`); // Expected: 1
 
+console.log("\nTest 3:");
 a = 'aaae';
 b = 'aa';
-console.log(commonDivisors(a, b)) // 0
+console.log(`commonDivisors("${a}", "${b}") = ${commonDivisors(a, b)}`); // Expected: 0
 
+console.log("\nTest 4:");
 a = 'ababab';
 b = 'abab';
-console.log(commonDivisors(a, b)) // 1
+console.log(`commonDivisors("${a}", "${b}") = ${commonDivisors(a, b)}`); // Expected: 1
