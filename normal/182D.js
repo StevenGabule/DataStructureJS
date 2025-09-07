@@ -1,22 +1,17 @@
-// Result: 2
-// const a = 'abcdabcd';
-// const b = 'abcdabcdabcdabcd';
-
-// Result: 1
 function commonDivisors(a, b) {
 	const A = a.length;
 	const B = b.length;
 	const S = Math.min(A, B);
 	let r = 0;
 
-	// start from 1, not 0 (can't have a divisor of length 0)
+	// Start from 1, not 0 (can't have divisor of length 0)
 	for (let i = 1; i <= S; ++i) {
-		// check if i divisors both string lengths
+		// Check if i divides both string lengths
 		if (A % i !== 0 || B % i !== 0) continue;
 
 		let w = true;
 
-		// check if the first characters of both strings match
+		// Check if first i characters of both strings match
 		for (let j = 0; j < i; ++j) {
 			if (a[j] !== b[j]) {
 				w = false;
@@ -25,7 +20,7 @@ function commonDivisors(a, b) {
 		}
 		if (!w) continue;
 
-		// check if string a is periodic with a period i
+		// Check if string a is periodic with period i
 		for (let j = 0; j < A; ++j) {
 			if (a[j] !== a[j % i]) {
 				w = false;
@@ -34,7 +29,8 @@ function commonDivisors(a, b) {
 		}
 		if (!w) continue;
 
-		// check if string b is periodic with a period i
+		// Check if string b is periodic with period i
+		// Fixed: was "j < 0", should be "j < B"
 		for (let j = 0; j < B; ++j) {
 			if (b[j] !== b[j % i]) {
 				w = false;
