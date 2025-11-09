@@ -51,3 +51,34 @@
         },
       };
     }
+
+    const potentialCleaners = await this.prisma.cleaner.findMany({
+      where,
+      include: {
+        location: true,
+        availability: true,
+        reviewsAsCleaner: true,
+        assignedBookings: true,
+      },
+    });
+
+    const cleanersInArea = potentialCleaners.filter((cleaner) => {
+      if (!cleaner.location?.latitude || !cleaner.location?.longitude)
+        return false;
+      const distance = this.calculateDistance(
+        booking.serviceLatitude,
+        booking.serviceLongitude,
+        cleaner.location.latitude,
+        cleaner.location.longitude,
+      );
+      const maxDistance = this.getDistanceForTravelLevel(
+        cleaner.location.travelLevel,
+      );
+      return distance <= maxDistance;
+    });
+
+    return await this.filterCleanersByWeeklyHours(cleanersInArea, booking);
+  }
+		
+		
+		
