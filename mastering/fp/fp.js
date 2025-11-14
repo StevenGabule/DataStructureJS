@@ -44,3 +44,5 @@ const factorial = memoize(function (n) {
 })
 
 console.log(factorial(10))
+
+
