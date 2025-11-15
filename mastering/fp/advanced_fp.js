@@ -366,7 +366,7 @@ function validatePassword(password) {
 const validateUser = (userData) => {
 	const validations = [
 		validateAge(userData.age),
-		validateEmail(userData.email),
+		validateEmail1(userData.email),
 		validatePassword(userData.password),
 	];
 
@@ -384,7 +384,6 @@ const validateUser = (userData) => {
 // 2. Composable: Chain operations that might fail
 // 3. Type safety: Compiler/linter can verify error handling
 // 4. No hidden control flow: No unexpected jumps via exceptions
-
 
 
 
