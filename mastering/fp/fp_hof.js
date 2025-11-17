@@ -47,6 +47,3 @@ const processDivision = (num, den) => incrementIfValid(saveDivide(num, den)).fol
 
 console.log(processDivision(10, 2)); // 6
 console.log(processDivision(10, 0)); // Division Error
-
-
-

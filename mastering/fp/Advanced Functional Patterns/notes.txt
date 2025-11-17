@@ -1,0 +1,4 @@
+// Introduction & Core Philosophy
+// Functional Programming (FP) is a programming paradigm that treats computation as the evaluation of 
+// mathematical functions, avoiding state changes and mutable data. In JavaScript, FP techniques can 
+// lead to more predictable, testable, and maintainable code.
