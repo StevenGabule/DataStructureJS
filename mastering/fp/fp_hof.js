@@ -45,5 +45,10 @@ const saveDivide = (numerator, denominator) => denominator === 0 ? Maybe(null) :
 const incrementIfValid = result => result.map(r => r + 1);
 const processDivision = (num, den) => incrementIfValid(saveDivide(num, den)).fold('Division Error', result => result)
 
-console.log(processDivision(10, 2)); // 6
+
+
+
 console.log(processDivision(10, 0)); // Division Error
+console.log(processDivision(10, 2)); // 6
+
+
