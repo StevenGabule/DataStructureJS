@@ -1,0 +1,11 @@
+Understanding Functors and Monads
+Before diving into examples, 
+
+let's clarify these concepts:
+Functor: 
+	A container that can be mapped over (has a map method)
+Monad: 
+	A functor that also has flatMap (or chain) and of methods, 
+	allowing for composition of nested contexts.
+
+	
