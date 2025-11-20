@@ -8,4 +8,25 @@ Monad:
 	A functor that also has flatMap (or chain) and of methods, 
 	allowing for composition of nested contexts.
 
-	
+
+Summary
+Monads and Functors provide powerful abstractions for handling complex scenarios in functional programming:
+
+Maybe - Null safety and optional values
+Either - Error handling with context
+IO - Pure handling of side effects
+Reader - Dependency injection
+State - Stateful computations
+Writer - Logging and accumulation
+Continuation - Advanced control flow
+Task - Async operations
+Result - Rust-like error handling
+Free - Building DSLs
+
+Each monad solves specific problems and they can be combined using:
+
+Natural transformations
+Monad transformers
+Functor composition
+
+The key is choosing the right abstraction for your specific use case and combining them effectively to build maintainable, composable, and type-safe applications.
