@@ -8,7 +8,7 @@ function dayName(number) {
 
  console.log(dayName(1));
 */
-let weekDay = function () {
+let weekDays = function () {
     let names = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     return {
         name: function (number) {
@@ -20,8 +20,7 @@ let weekDay = function () {
     }
 }();
 
-console.log(weekDay.name(weekDay.number("Sunday")));
-
+console.log(weekDays.name(weekDays.number("Sunday")));
 
 (function (exports) {
     let names = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -34,7 +33,6 @@ console.log(weekDay.name(weekDay.number("Sunday")));
 })(this.weekDay = {});
 
 console.log(weekDay.name(weekDay.number("Saturday")));
-
 
 let plusOne = new Function("n", "return n + 1;");
 console.log(plusOne(4));
@@ -63,9 +61,7 @@ let defineCache = Object.create(null);
 let currentMod = null;
 
 function getModule(name) {
-
-    if (name in defineCache)
-        return defineCache[name];
+    if (name in defineCache) return defineCache[name];
 
     let module = {
         exports: null,
@@ -84,7 +80,6 @@ function getModule(name) {
 }
 
 function define(depNames, moduleFunction) {
-
     let myMod = currentMod;
     let deps = depNames.map(getModule);
 
@@ -93,17 +88,13 @@ function define(depNames, moduleFunction) {
     });
 
     function whenDepsLoaded() {
-
         if (!deps.every(function (m) {
             return m.loaded;
         })) return;
-
         let args = deps.map(function (m) {
             return m.exports;
         });
-
         let exports = moduleFunction.apply(null, args);
-
         if (myMod) {
             myMod.exports = exports;
             myMod.loaded = true;
@@ -112,7 +103,6 @@ function define(depNames, moduleFunction) {
             });
         }
     }
-
     whenDepsLoaded();
 }
 
