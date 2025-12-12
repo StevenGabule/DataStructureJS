@@ -1,7 +1,8 @@
-// Part 1: Foundational Concepts
-// 1.1 Pure Functions
-// Pure functions are the building blocks of FP. They always return the same output for the same input 
-// and have no side effects.
+// ** Part 1: Foundational Concepts
+// ** 1.1 Pure Functions
+// ** Pure functions are the building blocks of FP. 
+// ** They always return the same output for the same input 
+// ** and have no side effects.
 
 // impure function - modifies external state
 let globalCounter = 0;

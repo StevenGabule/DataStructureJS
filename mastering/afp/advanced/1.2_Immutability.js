@@ -1,7 +1,8 @@
-// 1.2 Immutability
-// Immutability prevents data from being modified after creation, eliminating a whole class of bugs.
+// * 1.2 Immutability
+// * Immutability prevents data from being modified after creation, 
+// * eliminating a whole class of bugs.
 
-// Advanced immutability patterns with structural sharing
+// * Advanced immutability patterns with structural sharing
 class ImmutableList {
 	constructor(items = []) {
 		this._items = Object.freeze([...items]);
@@ -44,9 +45,17 @@ const list1 = new ImmutableList([1, 2, 3]);
 const list2 = list1.append(4);
 const list3 = list2.update(1, 20);
 
-console.log(list1.toArray()); // [1,2,3] - unchanged
+console.log(list1.toArray()); //  [1,2,3] - unchanged
 console.log(list2.toArray()); // [1,2,3,4]
 console.log(list3.toArray()); // [1,20,3,4]
+
+const doubled = list1.map(x => x * 2);
+console.log("doubled", [...doubled]);
+
+for (const value of list1.map(x => x * 2)) {
+	console.log("value: ", value);
+}
+
 
 // Why this design:
 // 1. Time-travel debugging: Can keep history of all states
