@@ -55,7 +55,16 @@ const processUserData = pipe(
 // Usage
 const rawUser = { email: 'somone@gmail.com', name: '   John Doe   ' };
 const processedUser = processUserData(rawUser);
-
+console.log(processedUser);
+// {
+//   email: 'somone@gmail.com',
+//   name: 'John Doe',
+//   createdAt: '2025-12-12T23:19:27.045Z',
+//   id: 1234,
+//   displayName: 'John Doe <somone@gmail.com>',
+//   avatar: 'https://api.avatars.com/somone@gmail.com'
+// }
+ 
 // Why compose/pipe design:
 // 1. Modularity: Each function has single responsibility
 // 2. Reusability: Functions can be reused in different pipelines
